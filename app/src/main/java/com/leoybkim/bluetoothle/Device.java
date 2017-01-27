@@ -5,11 +5,14 @@ package com.leoybkim.bluetoothle;
  */
 
 public class Device {
-    private String deviceID;
+    private String deviceAddress;
+    private String deviceName;
 
-    public Device(String ID) {
-        this.deviceID = ID;
+    public Device(String address, String name) {
+        this.deviceAddress = address;
+        this.deviceName = name;
     }
 
-    public String getDeviceID() { return deviceID; }
+    public String getDeviceAddress() { return deviceAddress; }
+    public String getDeviceName() { return deviceName; }
 }

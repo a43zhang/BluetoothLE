@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ScannerActivity extends AppCompatActivity {
 
@@ -24,6 +25,7 @@ public class ScannerActivity extends AppCompatActivity {
     private boolean mScanning;
     private ArrayList<Device> mDevices = new ArrayList<>();
     private DeviceAdapter mAdapter;
+    private HashSet<String> mHashAddressSet = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +88,13 @@ public class ScannerActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mDevices.add(new Device(device.toString()));
-                            mAdapter.notifyDataSetChanged();
-                            Log.d(TAG, device.toString());
+
+                            if (!mHashAddressSet.contains(device.getAddress())) {
+                                mHashAddressSet.add(device.getAddress());
+                                mDevices.add(new Device(device.getAddress(), device.getName()));
+                                mAdapter.notifyDataSetChanged();
+                                Log.d(TAG, device.toString());
+                            }
                         }
                     });
                 }

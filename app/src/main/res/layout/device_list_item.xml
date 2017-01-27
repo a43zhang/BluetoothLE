@@ -8,7 +8,14 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/deviceID"
+        android:id="@+id/deviceAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        tools:text="0E:09:43:F6:BF:08"/>
+
+    <TextView
+        android:id="@+id/deviceName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Nexus 5X"/>

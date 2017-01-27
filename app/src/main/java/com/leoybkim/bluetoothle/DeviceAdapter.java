@@ -27,8 +27,10 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         }
 
         Device currentDevice = getItem(position);
-        TextView deviceID = (TextView) listItemView.findViewById(R.id.deviceID);
-        deviceID.setText(currentDevice.getDeviceID());
+        TextView deviceAddress = (TextView) listItemView.findViewById(R.id.deviceAddress);
+        deviceAddress.setText(currentDevice.getDeviceAddress());
+        TextView deviceName = (TextView) listItemView.findViewById(R.id.deviceName);
+        deviceName.setText(currentDevice.getDeviceName());
 
         return listItemView;
     }
