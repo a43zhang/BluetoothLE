@@ -97,8 +97,10 @@ public class ScannerActivity extends AppCompatActivity {
 
                 if (device.getUUIDs().contains(UART_UUID)) {
                     mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
-                    Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+
                     Intent messageIntent = new Intent(ScannerActivity.this, MessageActivity.class);
+
                     startActivity(messageIntent);
                 }
             }
@@ -127,18 +129,18 @@ public class ScannerActivity extends AppCompatActivity {
 
         scanDevice(true);
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if ( mGatt!= null) {
-            mGatt.disconnect();
-            mGatt.close();
-            mGatt = null;
-            tx = null;
-            rx = null;
-        }
-    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        if ( mGatt!= null) {
+//            mGatt.disconnect();
+//            mGatt.close();
+//            mGatt = null;
+//            tx = null;
+//            rx = null;
+//        }
+//    }
 
     private void scanDevice(final boolean enable) {
         if (enable) {
@@ -185,19 +187,24 @@ public class ScannerActivity extends AppCompatActivity {
         // Called whenever the device connection state changes, i.e. from disconnected to connected.
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            Log.d(TAG, "new BluetoothGattCallback");
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothGatt.STATE_CONNECTED) {
-                Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "connected");
                 // Discover services.
                 if (!gatt.discoverServices()) {
-                    Toast.makeText(getApplicationContext(), "Failed to start discovering services!", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Failed to start discovering services!", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Failed to start discovering services!");
                 }
             }
             else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                Toast.makeText(getApplicationContext(), "Disconnected!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Disconnected!", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Disconnected!");
             }
             else {
-                Toast.makeText(getApplicationContext(), "Connection state changed.  New state: ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Connection state changed.  New state: ", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Connection state changed.  New state: " + newState);
             }
         }
 
@@ -206,6 +213,7 @@ public class ScannerActivity extends AppCompatActivity {
         // manipulating any services or characteristics.
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.d(TAG, "onServicesDiscovered()");
             super.onServicesDiscovered(gatt, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.d(TAG, "Service discovery completed!");
