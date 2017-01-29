@@ -47,6 +47,7 @@ public class ScannerActivity extends AppCompatActivity {
     public static UUID CLIENT_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothGatt mGatt;
     private Handler mHandler;
     private BluetoothGattCharacteristic tx;
     private BluetoothGattCharacteristic rx;
@@ -95,8 +96,10 @@ public class ScannerActivity extends AppCompatActivity {
                 Device device = mAdapter.getItem(position);
 
                 if (device.getUUIDs().contains(UART_UUID)) {
-                    device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
+                    mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
                     Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+                    Intent messageIntent = new Intent(ScannerActivity.this, MessageActivity.class);
+                    startActivity(messageIntent);
                 }
             }
         });
@@ -123,6 +126,18 @@ public class ScannerActivity extends AppCompatActivity {
         }
 
         scanDevice(true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if ( mGatt!= null) {
+            mGatt.disconnect();
+            mGatt.close();
+            mGatt = null;
+            tx = null;
+            rx = null;
+        }
     }
 
     private void scanDevice(final boolean enable) {
