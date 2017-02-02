@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,6 +29,7 @@ public class MessageActivity extends AppCompatActivity {
     private TextView dialogue;
     private EditText input;
 
+
     public static UUID UART_UUID   = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
     public static UUID TX_UUID     = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
     public static UUID RX_UUID     = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
@@ -36,6 +38,8 @@ public class MessageActivity extends AppCompatActivity {
     private BluetoothGattCharacteristic tx;
     private BluetoothGattCharacteristic rx;
 
+    private BluetoothGatt mGatt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,20 @@ public class MessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message);
         dialogue = (TextView) findViewById(R.id.messages);
         input = (EditText) findViewById(R.id.input);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Device device = extras.getParcelable("connectedDevice");
+            mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
+
+//            if (device.getUUIDs().contains(UART_UUID)) {
+//                    mGatt = device.getDevice().connectGatt(getApplicationContext(), false, MessageActivity.mGattCallback);
+//                    //Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+//
+//            }
+            Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void sendClick(View view) {
@@ -53,7 +71,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     // Gatt callback
-    private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+    public BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         // Called whenever the device connection state changes, i.e. from disconnected to connected.
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {

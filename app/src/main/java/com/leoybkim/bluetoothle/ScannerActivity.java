@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -95,14 +96,11 @@ public class ScannerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Device device = mAdapter.getItem(position);
 
-                if (device.getUUIDs().contains(UART_UUID)) {
-                    mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
-                    //Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
+                Intent messageIntent = new Intent(ScannerActivity.this, MessageActivity.class);
+                messageIntent.putExtra("connectedDevice", (Parcelable) device);
+                startActivity(messageIntent);
 
-                    Intent messageIntent = new Intent(ScannerActivity.this, MessageActivity.class);
 
-                    startActivity(messageIntent);
-                }
             }
         });
 
@@ -129,18 +127,6 @@ public class ScannerActivity extends AppCompatActivity {
 
         scanDevice(true);
     }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if ( mGatt!= null) {
-//            mGatt.disconnect();
-//            mGatt.close();
-//            mGatt = null;
-//            tx = null;
-//            rx = null;
-//        }
-//    }
 
     private void scanDevice(final boolean enable) {
         if (enable) {
@@ -180,66 +166,6 @@ public class ScannerActivity extends AppCompatActivity {
                     });
                 }
             };
-
-    // TODO: remove later
-    private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
-        // Called whenever the device connection state changes, i.e. from disconnected to connected.
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            Log.d(TAG, "new BluetoothGattCallback");
-            super.onConnectionStateChange(gatt, status, newState);
-            if (newState == BluetoothGatt.STATE_CONNECTED) {
-                //Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "connected");
-                // Discover services.
-                if (!gatt.discoverServices()) {
-                    //Toast.makeText(getApplicationContext(), "Failed to start discovering services!", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "Failed to start discovering services!");
-                }
-            }
-            else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                //Toast.makeText(getApplicationContext(), "Disconnected!", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Disconnected!");
-            }
-            else {
-                //Toast.makeText(getApplicationContext(), "Connection state changed.  New state: ", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Connection state changed.  New state: " + newState);
-            }
-        }
-
-        // Called when services have been discovered on the remote device.
-        // It seems to be necessary to wait for this discovery to occur before
-        // manipulating any services or characteristics.
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            Log.d(TAG, "onServicesDiscovered()");
-            super.onServicesDiscovered(gatt, status);
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(TAG, "Service discovery completed!");
-            }
-            else {
-                Log.d(TAG, "Service discovery failed with status: " + status);
-            }
-            // Save reference to each characteristic.
-            tx = gatt.getService(UART_UUID).getCharacteristic(TX_UUID);
-            rx = gatt.getService(UART_UUID).getCharacteristic(RX_UUID);
-            // Setup notifications on RX characteristic changes (i.e. data received).
-            // First call setCharacteristicNotification to enable notification.
-            if (!gatt.setCharacteristicNotification(rx, true)) {
-                Log.d(TAG, "Couldn't set notifications for RX characteristic!");
-            }
-            // Next update the RX characteristic's client descriptor to enable notifications.
-            if (rx.getDescriptor(CLIENT_UUID) != null) {
-                BluetoothGattDescriptor desc = rx.getDescriptor(CLIENT_UUID);
-                desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                if (!gatt.writeDescriptor(desc)) {
-                    Log.d(TAG, "Couldn't write RX client descriptor value!");
-                }
-            }
-            else {
-                Log.d(TAG, "Couldn't get RX client descriptor!");
-            }
-        }
 
 
     }
