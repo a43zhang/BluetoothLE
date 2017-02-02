@@ -37,7 +37,7 @@
             android:id="@+id/messages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="top"
             tools:text="message goes here"/>
 
     </ScrollView>

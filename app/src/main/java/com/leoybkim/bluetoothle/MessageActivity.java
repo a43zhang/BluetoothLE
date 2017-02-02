@@ -65,8 +65,11 @@ public class MessageActivity extends AppCompatActivity {
     public void sendClick(View view) {
         String message = input.getText().toString();
         Log.d(TAG, message);
-        dialogue.append("Sent: " + message + "\n");
         input.setText("");
+        tx.setValue(message.getBytes(Charset.forName("UTF-8")));
+        if (mGatt.writeCharacteristic(tx)) {
+            dialogue.append("Sent: " + message + "\n");
+        }
     }
 
     // Gatt callback
