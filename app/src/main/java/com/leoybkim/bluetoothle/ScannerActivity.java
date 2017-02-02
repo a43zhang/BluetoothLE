@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -95,12 +96,10 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Device device = mAdapter.getItem(position);
-
                 Intent messageIntent = new Intent(ScannerActivity.this, MessageActivity.class);
-                messageIntent.putExtra("connectedDevice", (Parcelable) device);
+                Log.d(TAG, "ADDRESS: " + device.getDeviceAddress());
+                messageIntent.putExtra("connectedDevice", device);
                 startActivity(messageIntent);
-
-
             }
         });
 
@@ -158,7 +157,7 @@ public class ScannerActivity extends AppCompatActivity {
 
                             if (!mHashAddressSet.contains(device.getAddress())) {
                                 mHashAddressSet.add(device.getAddress());
-                                mDevices.add(new Device(device, device.getAddress(), device.getName(), parseUUIDs(scanRecord)));
+                                mDevices.add(new Device(device, device.getAddress(), device.getName()));
                                 mAdapter.notifyDataSetChanged();
                                 Log.d(TAG, device.toString());
                             }

@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,7 +30,6 @@ public class MessageActivity extends AppCompatActivity {
     private TextView dialogue;
     private EditText input;
 
-
     public static UUID UART_UUID   = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
     public static UUID TX_UUID     = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
     public static UUID RX_UUID     = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
@@ -40,7 +40,6 @@ public class MessageActivity extends AppCompatActivity {
 
     private BluetoothGatt mGatt;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,17 +47,17 @@ public class MessageActivity extends AppCompatActivity {
         dialogue = (TextView) findViewById(R.id.messages);
         input = (EditText) findViewById(R.id.input);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            Device device = extras.getParcelable("connectedDevice");
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            Device device = bundle.getParcelable("connectedDevice");
             mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
+            Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
 
-//            if (device.getUUIDs().contains(UART_UUID)) {
-//                    mGatt = device.getDevice().connectGatt(getApplicationContext(), false, MessageActivity.mGattCallback);
+//             if (device.getUUIDs().contains(UART_UUID)) {
+//                    mGatt = device.getDevice().connectGatt(getApplicationContext(), false, mGattCallback);
 //                    //Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
 //
 //            }
-            Toast.makeText(getApplicationContext(), "Successfully connected " + device.getDeviceAddress().toString(), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -134,7 +133,7 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Log.d(TAG, "Received: " + characteristic.getStringValue(0));
+            dialogue.append("Received: " + characteristic.getStringValue(0) + "\n");
         }
     };
 
